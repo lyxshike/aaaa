@@ -1,0 +1,102 @@
+BeanPsotProcessor后置处理器(构造方法执行之后)
+postProcessBeforeInitialization 实例化，依赖注入完毕，在调用显示的初始化之前完成一些定制的初始化任务
+postProcessAfterInitialization  实例化，依赖注入，初始化完毕时执行
+
+spring加载bean流程解析
+
+扫描指定包路径下的spring注解(@Component, @Service....),spring会将该bean的信息装配到对应的BeanDefintation中，会在DefaultListableBeanFactory-beanDefinitionMap来存储bean集合。会将单例对象放入spring的单例池中。
+
+Spring如何解决循环依赖(解决原理基于java的引用传递)
+Bean的实例化和初始化的区别
+实例化： 主要是从beanDefinitionMap循环读取bean，获取它的属性，然后利用反射(core包下有ReflectionUtil会先强行将构造方法setAccessible(true))读取对象的构造方法(spring会自动判断是否是有参数还是无参数，以及构造方法中的参数是否可用)，然后再去创建实例(newInstance)
+初始化： 一个是属性填充(@Autowired注解注入的属性就发生在这个阶段), 另一个就是具体的初始化(将初始化好的bean放入到spring的缓存中，填充我们预设的属性进一步做后置处理，spring xml的init等)
+
+spring的单例对象初始化主要分为3步
+(1) createBeanInstance实例化(调用对象的构造方法实例化对象)
+(2) populateBean填充属性(对bean的依赖属性进行填充)
+(3)initializeBean 初始化(调用spring xml的init()方法)
+
+spring单例对象的三级缓存
+singletonObjects: 存放初始化好的bean
+earlySingletonObjects: 提前曝光的单例对象的Cache(用于检测循环引用，与singletonFactories互斥)， A依赖B， 创建B的时候把A从三级缓存中移到该缓存中
+singletonFactories: 将刚实例化好的bean放在singletonFactories的好处是可扩展，bean可以通过实现SmartInstantiationAwareBeanPostProcessor接口(一般这个接口供spring内部使用的)getEarlyBeanReference方法进行扩展。
+
+SpringApplication 构造方法
+配置Source
+配置是否为web环境
+创建初始化构造器
+创建应用监听器
+配置应用的主方法所在类	
+
+run()方法
+启动计时器
+应用启动监听器模块
+创建应用参数解析器
+配置环境模块
+1，是否web
+2， 关联environment， 应用参数， 监听器
+配置banner
+创建applicationContext上下文(web/noweb)
+创建SpringbootExceptionReporter
+prepareContext(将context, environment,listener,applicationArguments,printedBanner关联)
+refreshContext()
+prepareRefresh()  设置当前context的状态
+obtainFreshBeanFactory()  判断refreshed状态，只允许单次刷新。 设置bean工厂的序列ID“application”
+prepareBeanFactory()  准备用于上下文的bean工厂 classLoader,post-processors等。注册了一大堆的bean
+postProcessBeanFactory()  允许上下文子类bean工厂的post-process
+invokeBeanFactoryPostProcessors 调用上下文中以bean注册到工厂的processors
+registerBeanPostProcessors在bean创建前注册beanprocessors
+initMessageSource()  提供了消息处理功能。 主要用于国际化/I18n
+initApplicationEventMulticaster()  为上下文初始化一个事件广播
+onRefresh()  创建一个WebServer, tomcat
+registerListeners()  检查并注册监听器
+finishBeanFactoryInitialization() 初始化所有非懒加载的单例bean
+finishRefresh()  启动webServer，发布事件
+
+
+
+
+Spring启动流程(必背)
+配置SOURCE  program-arguments
+配置是否为web环境  webApplicationType
+创建初始化构造器    ApplicationContextInitializer
+创建应用监听器       ApplicationListener
+配置应用的主方法所在类
+
+run()方法
+启动计时器(stopwatch), 监听器(SpringApplicationRunListeners)
+Banner
+SpringBootExceptionReporter
+ConfigurableApplicationContext(配置环境模块)
+1，创建应用上下文对象web/noweb
+2 , 加载属性文件资源
+3，配置监听器
+ConfigurableApplicationContext(应用上下文模块)
+1， 创建应用上下文对象web/noweb
+2 ,  基本属性配置
+加载配置环境，ResourceLoader 资源加载器， 配置监听器， 加载启动参数
+3， 刷新应用上下文
+准备环境所需所需bean工厂通过工厂产生环境所需bean
+
+
+
+SpringBoot  拦截器
+1， 实现HandlerInterceptor
+@Component
+public class LoginHandlerInterceptor implements HandlerInterceptor{}
+
+2,   创建config来注册拦截器
+@Configuration
+public class MyMvcConfig implements WebMvcConfigurer{
+WebMvcConfigurer 接口
+1， addInterceptors:  拦截器
+2， addViewControllers  页面跳转
+3， addResourceHandlers: 静态资源
+4， configureDefaultServletHandling: 默认静态资源处理器
+5， configureViewResolvers: 视图解析器
+6， configureContentNegotation: 配置内容裁决的一些参数
+7， addCorsMappings:   跨域
+8， configureMessageConverters：  信息转化器
+
+
+}
