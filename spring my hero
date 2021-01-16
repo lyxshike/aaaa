@@ -1,30 +1,29 @@
-Spring的单例对象初始化主要分为3步
-(1) createBeanInstance 实例化(调用对象的构造方法实例化对象)
-(2) populateBean  填充属性(对bean的依赖属性进行填充)
-(3) initializeBean 初始化(调用spring xml 的init()方法)
+Spring内部的BeanPostProcessor
 
+
+Spring的单例对象初始化主要分为3步
+
+	(1) createBeanInstance 实例化(调用对象的构造方法实例化对象)
+	(2) populateBean  填充属性(对bean的依赖属性进行填充)
+	(3) initializeBean 初始化(调用spring xml 的init()方法)
 
 
 BeanPostProcessor
 	
-	// 初始化之前的操作
-    Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException;
-    // 初始化之后的操作
-    Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException;
-
-
+		// 初始化之前的操作
+		Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException;
+		// 初始化之后的操作
+		Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException;
+		
 	
 InstantiationAwareBeanPostProcessor 
 
 		//在目标对象被实例化之前调用的方法
 		Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException;
-		
+		//在目标对象被实例化之后调用的方法
 		boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException;
-		
-		postProcessAfterInstantiation 如果该方法返回false，会忽略属性值的设置
-		PropertyValues postProcessPropertyValues(
-    PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName)
-    throws BeansException;
+		//postProcessAfterInstantiation 如果该方法返回false，会忽略属性值的设置
+		PropertyValues postProcessPropertyValues(PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName) throws BeansException;
 	
 	SmartInstantiationAwareBeanPostProcessor  继承 InstantiationAwareBeanPostProcessor	
 		
@@ -37,18 +36,21 @@ InstantiationAwareBeanPostProcessor
 		//只有单例对象才会调用此方法  获得提前暴露的bean引用。主要用于解决循环引用的问题
 		Object getEarlyBeanReference(Object bean, String beanName) throws BeansException;
 
-DestructionAwareBeanPostProcessor		
+DestructionAwareBeanPostProcessor	(继承BeanPostProcessor)	
 
 		//该方法是bean在Spring在容器中被销毁之前调用
 		void postProcessBeforeDestruction(Object bean, String beanName) throws BeansException;
 		
-MergedBeanDefinitionPostProcessor
+MergedBeanDefinitionPostProcessor   (继承BeanPostProcessor)
 
 		//该方法是bean在合并Bean定义之后调用
 		void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName);
 
 
+
 Spring内置的BeanPostProcessor总结
+
+
 
 CommonAnnotationBeanPostProcessor  
 @Resource、@PostConstruct和@PreDestroy
