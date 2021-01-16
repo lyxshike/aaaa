@@ -53,19 +53,28 @@ Spring内置的BeanPostProcessor总结
 
 
 CommonAnnotationBeanPostProcessor  
-@Resource、@PostConstruct和@PreDestroy
+    @Resource、@PostConstruct和@PreDestroy
+	
 AutowiredAnnotationBeanPostProcessor  
-@Autowired、@Value、@Lookup和@Inject
+    @Autowired、@Value、@Lookup和@Inject
+
 RequiredAnnotationBeanPostProcessor   
-@Required
-AbstractAutoProxyCreator    Spring AOP
+    @Required
+    
+AbstractAutoProxyCreator    
+    Spring AOP
+    
 ScheduledAnnotationBeanPostProcessor  
-默认不添加。使用@EnableScheduling注解后，会被注册到Spring容器中。主要使用Spring Scheduling功能对bean中使用了@Scheduled注解的方法进行调度处理
+     默认不添加。使用@EnableScheduling注解后，会被注册到Spring容器中。主要使用Spring Scheduling功能对bean中使用了@Scheduled注解的方法进行调度处理
+     
 AsyncAnnotationBeanPostProcessor   
-默认不添加  使用@EnableAsync注解后，会被注册到Spring容器中。AsyncAnnotationBeanPostProcessor内部使用aop处理方法的调用。
+     默认不添加  使用@EnableAsync注解后，会被注册到Spring容器中。AsyncAnnotationBeanPostProcessor内部使用aop处理方法的调用。
 
-
-
+BeanValidationPostProcessor
+     默认不添加  使用JSR-303对bean的属性校验
+     
+MethodValidationPostProcessor
+     默认不添加  在类上加@Validated，使用JSR-303对方法的参数校验
 
 
 
